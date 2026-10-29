@@ -1,0 +1,16 @@
+# 虚拟环境（很大，且机器相关，不要提交）
+.venv/
+
+# 你的真实密钥（绝不提交！）
+.env
+
+# 日志
+*.log
+*.err
+
+# Python 缓存
+__pycache__/
+*.pyc
+
+# macOS 系统文件
+.DS_Store

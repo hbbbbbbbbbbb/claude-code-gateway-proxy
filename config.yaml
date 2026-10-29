@@ -1,0 +1,43 @@
+# =============================================================================
+#  LiteLLM 代理配置
+#  —— 把 Claude Code 的 Anthropic 协议翻译成 OpenAI 兼容网关的协议
+# =============================================================================
+#
+#  使用前需要改两个地方：
+#    1. 下面的 model_list（把你网关里的模型填进来）
+#    2. .env 文件（网关地址 + Key，见 .env.example）
+#
+#  model_list 里每个条目 = 一条「Claude Code 模型名 -> 网关真实模型」的映射：
+#    - model_name : 你在 Claude Code 里用 /model 看到、并要选择的名字（可随便起）
+#    - model      : 网关侧真实的模型 ID
+#
+#  关于 model 前缀：
+#    使用 hosted_vllm/ 前缀表示走 OpenAI 的 /chat/completions 接口（不触发
+#    Responses API）。它适用于绝大多数 OpenAI 兼容网关（NewAPI / One-API /
+#    vLLM / SGLang 等）。如果你的网关明确支持 Responses API，也可改用 openai/ 前缀。
+#
+#  查询网关支持哪些模型：
+#    curl "$GATEWAY_BASE_URL/models" -H "Authorization: Bearer $GATEWAY_API_KEY"
+# =============================================================================
+
+model_list:
+  - model_name: my-model-alias
+    litellm_params:
+      model: hosted_vllm/your-model-id
+      api_base: os.environ/GATEWAY_BASE_URL
+      api_key: os.environ/GATEWAY_API_KEY
+      timeout: 600
+
+  # 更多模型照抄上面的结构，例如：
+  # - model_name: my-model-alias-2
+  #   litellm_params:
+  #     model: hosted_vllm/your-model-id-2
+  #     api_base: os.environ/GATEWAY_BASE_URL
+  #     api_key: os.environ/GATEWAY_API_KEY
+  #     timeout: 600
+
+litellm_settings:
+  drop_params: true          # 网关不认识的 Claude 特有参数自动丢弃，避免报错
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY   # 本地代理自己的访问密码
